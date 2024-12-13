@@ -17,7 +17,7 @@ cat /tmp/message
 
 gcloud scheduler jobs create http monthlyupdate \
        --description "Ingest flights using Cloud Run" \
-       --schedule="8 of month 10:00" --time-zone "America/New_York" \
+       --schedule="12 of month 21:30" --time-zone "Asia/Seoul" \
        --uri=$SVC_URL --http-method POST \
        --oidc-service-account-email $SVC_EMAIL --oidc-token-audience=$SVC_URL \
        --max-backoff=7d \
@@ -25,7 +25,8 @@ gcloud scheduler jobs create http monthlyupdate \
        --max-retry-duration=2d \
        --min-backoff=12h \
        --headers="Content-Type=application/json" \
-       --message-body-from-file=/tmp/message
+       --message-body-from-file=/tmp/message \
+       --location="asia-northeast3"
 
 
 # To try this out, go to Console and do two things:
