@@ -24,7 +24,10 @@ def addtimezone(lat, lon):
     try:
         import timezonefinder
         tf = timezonefinder.TimezoneFinder()
-        return lat, lon, tf.timezone_at(lng=float(lon), lat=float(lat))
+        tz = tf.timezone_at(lng=float(lon), lat=float(lat))
+        if tz is None:
+            tz = 'UTC'
+        return lat, lon, tz
         # return (lat, lon, 'America/Los_Angeles') # FIXME
     except ValueError:
         return lat, lon, 'TIMEZONE'  # header
@@ -70,7 +73,7 @@ if __name__ == '__main__':
     with beam.Pipeline('DirectRunner') as pipeline:
         airports = (pipeline
                     | 'airports:read' >> beam.io.ReadFromText('airports.csv.gz')
-                    | beam.Filter(lambda line: "United States" in line)
+                    | beam.Filter(lambda line: "United States" in line and line[-2:] == '1,')
                     | 'airports:fields' >> beam.Map(lambda line: next(csv.reader([line])))
                     | 'airports:tz' >> beam.Map(lambda fields: (fields[0], addtimezone(fields[21], fields[26])))
                     )

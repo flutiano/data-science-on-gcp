@@ -26,9 +26,10 @@ def addtimezone(lat, lon):
     try:
         import timezonefinder
         tf = timezonefinder.TimezoneFinder()
-        lat = float(lat)
-        lon = float(lon)
-        return lat, lon, tf.timezone_at(lng=lon, lat=lat)
+        tz = tf.timezone_at(lng=float(lon), lat=float(lat))
+        if tz is None:
+            tz = 'UTC'
+        return lat, lon, tz
     except ValueError:
         return lat, lon, 'TIMEZONE'  # header
 
@@ -125,7 +126,7 @@ def create_event_row(fields):
 def run(project, bucket, region):
     argv = [
         '--project={0}'.format(project),
-        '--job_name=ch04timecorr',
+        '--job_name=ch04timecorr-modified',
         '--save_main_session',
         '--staging_location=gs://{0}/flights/staging/'.format(bucket),
         '--temp_location=gs://{0}/flights/temp/'.format(bucket),
