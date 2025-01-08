@@ -2,8 +2,8 @@
 
 # install Google Python client on all nodes
 apt-get -y update
-apt-get install python-dev
-apt-get install -y python-pip
+apt-get install python3-dev
+apt-get install -y python3-pip
 pip install --upgrade google-api-python-client
 
 # git clone on Master

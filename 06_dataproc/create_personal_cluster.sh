@@ -26,7 +26,8 @@ gcloud dataproc clusters create ch6cluster \
   --worker-boot-disk-size 500 \
   --optional-components JUPYTER --project $PROJECT \
   --initialization-actions=$INSTALL \
-  --scopes https://www.googleapis.com/auth/cloud-platform
+  --scopes https://www.googleapis.com/auth/cloud-platform \
+  --public-ip-address
 
 
 echo "Once cluster is up, please run the following command to inject your auth into the cluster."

@@ -65,6 +65,7 @@ def run_bayes(BUCKET):
 
     # bayes in each bin
     df = pd.DataFrame(columns=['dist_thresh', 'delay_thresh', 'frac_ontime'])
+    data_to_append = [] # List to store data for new rows
     for m in range(0, len(distthresh) - 1):
         for n in range(0, len(delaythresh) - 1):
             bdf = flights[(flights['distance'] >= distthresh[m])
@@ -73,12 +74,18 @@ def run_bayes(BUCKET):
                           & (flights['dep_delay'] < delaythresh[n + 1])]
             ontime_frac = bdf.agg(F.sum('ontime')).collect()[0][0] / bdf.agg(F.count('ontime')).collect()[0][0]
             print(m, n, ontime_frac)
-            df = df.append({
+            data_to_append.append({
                 'dist_thresh': distthresh[m],
                 'delay_thresh': delaythresh[n],
                 'frac_ontime': ontime_frac
-            }, ignore_index=True)
+            })
 
+    # Create a DataFrame from the list of dictionaries
+    df_to_append = pd.DataFrame(data_to_append)
+
+    # Concatenate the new DataFrame with the original
+    df = pd.concat([df, df_to_append], ignore_index=True)
+    
     # lookup table
     df['score'] = abs(df['frac_ontime'] - 0.7)
     bayes = df.sort_values(['score']).groupby('dist_thresh').head(1).sort_values('dist_thresh')
