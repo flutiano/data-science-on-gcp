@@ -20,7 +20,7 @@ import tensorflow as tf
 from google.cloud import aiplatform
 from google.cloud.aiplatform import gapic as aip
 from google.cloud.aiplatform import hyperparameter_tuning as hpt
-from kfp.v2 import compiler, dsl
+from kfp import compiler, dsl
 
 ENDPOINT_NAME = 'flights'
 
@@ -29,11 +29,11 @@ def train_custom_model(data_set, timestamp, develop_mode, cpu_only_mode, tf_vers
     # Set up training and deployment infra
     
     if cpu_only_mode:
-        train_image='us-docker.pkg.dev/vertex-ai/training/tf-cpu.{}:latest'.format(tf_version)
-        deploy_image='us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.{}:latest'.format(tf_version)
+        train_image='asia-docker.pkg.dev/vertex-ai/training/tf-cpu.{}:latest'.format(tf_version)
+        deploy_image='asia-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.{}:latest'.format(tf_version)
     else:
-        train_image = "us-docker.pkg.dev/vertex-ai/training/tf-gpu.{}:latest".format(tf_version)
-        deploy_image = "us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.{}:latest".format(tf_version)
+        train_image = "asia-docker.pkg.dev/vertex-ai/training/tf-gpu.{}:latest".format(tf_version)
+        deploy_image = "asia-docker.pkg.dev/vertex-ai/prediction/tf2-gpu.{}:latest".format(tf_version)
 
     # train
     model_display_name = '{}-{}'.format(ENDPOINT_NAME, timestamp)
@@ -106,9 +106,9 @@ def train_automl_model(data_set, timestamp, develop_mode):
 def do_hyperparameter_tuning(data_set, timestamp, develop_mode, cpu_only_mode, tf_version):
     # Vertex AI services require regional API endpoints.
     if cpu_only_mode:
-        train_image='us-docker.pkg.dev/vertex-ai/training/tf-cpu.{}:latest'.format(tf_version)
+        train_image='asia-docker.pkg.dev/vertex-ai/training/tf-cpu.{}:latest'.format(tf_version)
     else: 
-        train_image = "us-docker.pkg.dev/vertex-ai/training/tf-gpu.{}:latest".format(tf_version)
+        train_image = "asia-docker.pkg.dev/vertex-ai/training/tf2-gpu.{}:latest".format(tf_version)
 
     # a single trial job
     model_display_name = '{}-{}'.format(ENDPOINT_NAME, timestamp)
@@ -184,9 +184,9 @@ def do_hyperparameter_tuning(data_set, timestamp, develop_mode, cpu_only_mode, t
     return train_custom_model(data_set, timestamp, develop_mode, cpu_only_mode, tf_version, extra_args=best_params)
 
 
-@dsl.pipeline(name="flights-ch9-pipeline",
-              description="ds-on-gcp ch9 flights pipeline"
-)
+# @dsl.pipeline(name="flights-ch9-pipeline",
+#               description="ds-on-gcp ch9 flights pipeline"
+# )
 def main():
     aiplatform.init(project=PROJECT, location=REGION, staging_bucket='gs://{}'.format(BUCKET))
 

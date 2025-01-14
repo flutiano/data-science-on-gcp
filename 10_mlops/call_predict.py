@@ -22,7 +22,8 @@ if __name__ == '__main__':
 
     endpoints = aiplatform.Endpoint.list(
         filter='display_name="{}"'.format(ENDPOINT_NAME),
-        order_by='create_time desc'
+        order_by='create_time desc',
+        location='asia-northeast3'
     )
     if len(endpoints) == 0:
         print("No endpoint named {}".format(ENDPOINT_NAME))
